@@ -37,7 +37,7 @@ const int COUNTS_PER_REVOLUTION = 360; // [count/rev]
 const float WHEEL_DIAMETER = 43.0; // [mm]
 const float ENCOD_SCALE_FACTOR = PI * WHEEL_DIAMETER / COUNTS_PER_REVOLUTION; // [mm/count]
 
-// Runtime constants
+// Runtime constant
 const float INC_SPEED_COUNTS_SECOND = 5.0; // [%]
 const float PERIOD = .1; //[sec]
 
@@ -47,7 +47,8 @@ enum {QUIT_PROGRAM, KEYBOARD_CONTROL};
 int main()
 {
 	char motor_aux_info[] = {LEFT_MOTOR_PORT, RIGHT_MOTOR_PORT};
-	Robot *p_robot = new Xg1300lGyro(PERIOD, TRACK, ENCOD_SCALE_FACTOR, motor_aux_info, (char *)&XG1300L_GYRO_PORT);
+	Robot *p_robot = new Ev3(PERIOD, TRACK, ENCOD_SCALE_FACTOR, motor_aux_info); //Odomtery only
+	//Robot *p_robot = new Xg1300lGyro(PERIOD, TRACK, ENCOD_SCALE_FACTOR, motor_aux_info, (char *)&XG1300L_GYRO_PORT); //Gyro Enhanced
 	InputKeys *p_keyboard = new Keyboard;
 	Odometry odometry(p_robot); 
 	

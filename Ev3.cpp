@@ -36,7 +36,6 @@ Ev3::Ev3(float period, float track, float encoderScaleFactor, char *motorInfo, c
 	mRightEncoderPort = 	motorInfo[RIGHT] - 1;
 	mLeftMotorPort = pow(2, mLeftEncoderPort);
 	mRightMotorPort = pow(2, mRightEncoderPort);
-	cout << "MOTOR_PORT_LEF" << mLeftMotorPort << " " << mRightMotorPort << " " << mLeftEncoderPort << " " << mRightEncoderPort << endl;
 
 	//Open the device file asscoiated to the motor controlers
 	if((mMotorDevFile = open(PWM_DEVICE_NAME, O_WRONLY)) == -1)

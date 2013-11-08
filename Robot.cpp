@@ -19,7 +19,6 @@
 
 #include <iostream>
 #include <sys/time.h>
-#include <cstdlib>
 #include "Robot.h"
 
 using namespace std;
@@ -32,7 +31,7 @@ Robot::Robot(float period, float track, float encoderScaleFactor, char *motorInf
 	
 	//Initialize timing variables
 	timeval time;
-	gettimeofday(&time, NULL);
+	gettimeofday(&time, 0);
 	mStartTimeSec = time.tv_sec;
 	mMeanTimeUsec = 0;
 	mMaxTimeUsec = 0;
