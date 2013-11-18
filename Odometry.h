@@ -1,5 +1,6 @@
 /*
  * Robot Navigation Program
+ * www.robotnav.com
  *
  * (C) Copyright 2013 Navigation Solutions, LLC
  *
@@ -21,24 +22,25 @@
 #define ODOMETRY_H
 
 #include "Robot.h"
+#include "MathFunctions.h"
 
 class Odometry
 {
 	Robot *mpSensors;
 	protected:
-		float mX;
-		float mY;
 		float mDisplacement;
 		float mRotation;
-		float mSpeed;
-		float mRate;
-		float mHeading;
 		float mPeriod;
 		virtual void getDisplacements();
-
 	public:
+		float mX;
+		float mY;
+		float mHeading;
+		float mSpeed;
+		float mRate;
 		Odometry(Robot *pSensors);
 		virtual void updatePosition();
+		inline float getPeriod(){return mPeriod;};
 		void reset();
 };
 

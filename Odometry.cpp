@@ -1,5 +1,6 @@
 /*
  * Robot Navigation Program
+ * www.robotnav.com
  *
  * (C) Copyright 2013 Navigation Solutions, LLC
  *
@@ -42,7 +43,7 @@ void Odometry::reset()
 void Odometry::getDisplacements()
 {
 	//Compute linear and angular displacements
-	mDisplacement = (mpSensors->getEncoders(RIGHT) + mpSensors->getEncoders(LEFT)) / 2.0;
+	mDisplacement = mpSensors->getDisplacement();
 	mRotation = mpSensors->getAngle();
 }
 
@@ -60,7 +61,7 @@ void Odometry::updatePosition()
 
 	//Convert from displacement to displacement/time
 	mSpeed = mDisplacement / mPeriod;
-	mRotation = mRotation / mPeriod;
-	cout << "POSITION: " << mX << " " << mY << " " << math_functions::rad2deg(mHeading) << " " << mSpeed << " " << math_functions::rad2deg(mRotation) << endl;
+	mRate = mRotation / mPeriod;
+	cout << "POSITION: " << mX << " " << mY << " " << math_functions::rad2deg(mHeading) << " " << mSpeed << " " << math_functions::rad2deg(mRate) << endl;
 }
 

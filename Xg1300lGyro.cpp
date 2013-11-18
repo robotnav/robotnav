@@ -1,5 +1,6 @@
 /*
  * Robot Navigation Program
+ * www.robotnav.com
  *
  * (C) Copyright 2013 Navigation Solutions, LLC
  *
@@ -25,11 +26,12 @@
 #include "MathFunctions.h"
 
 using namespace std;
+const char SENSOR_PORT_OFFSET = 1;
 
 Xg1300lGyro::Xg1300lGyro(float period, float track, float encoderScaleFactor, char *motorInfo, char *sensorInfo) : Ev3(period, track, encoderScaleFactor, motorInfo)
 {
 	IICDAT iic_dat;
-	mGyroPort = sensorInfo[0] - 'A';
+	mGyroPort = sensorInfo[0] - SENSOR_PORT_OFFSET;
 	//Open XGL device file
 	if((mXglDevFile = open(IIC_DEVICE_NAME, O_RDWR | O_SYNC)) == -1)
 	{
@@ -71,12 +73,12 @@ int Xg1300lGyro::readSensors()
 	//Get angle from XGL gyro
 	static float s_last_angle = 0;
 	short new_angle = pIic->Raw[mGyroPort][pIic->Actual[mGyroPort]][0]*256 + pIic->Raw[mGyroPort][pIic->Actual[mGyroPort]][1];
-	mAngle = (new_angle - s_last_angle)/100.0;
-	mAngle = math_functions::deg2rad(-mAngle);
-	mAngle = math_functions::unwrap(mAngle);
+	mRotation = (new_angle - s_last_angle)/100.0;
+	mRotation = math_functions::deg2rad(-mRotation);
+	mRotation = math_functions::unwrap(mRotation);
 	s_last_angle=new_angle;
 	
-	cout << "XG1300L: " << math_functions::rad2deg(mAngle) << endl;
+	cout << "XG1300L: " << math_functions::rad2deg(mRotation) << endl;
 	return DATA_READY;
 }
 

@@ -1,5 +1,6 @@
 /*
  * Robot Navigation Program
+ * www.robotnav.com
  *
  * (C) Copyright 2013 Navigation Solutions, LLC
  *
@@ -20,7 +21,10 @@
 #ifndef NAMESPACE_MATH_FUNCTIONS_H 
 #define NAMESPACE_MATH_FUNCTIONS_H
 
+enum {X_AXIS, Y_AXIS, HEADING};
 const float PI = 3.14159265;
+const float ZERO=1e-6;
+
 namespace math_functions
 {
 	float deg2rad(float degrees);

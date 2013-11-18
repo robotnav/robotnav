@@ -1,5 +1,6 @@
 /*
  * Robot Navigation Program
+ * www.robotnav.com
  *
  * (C) Copyright 2013 Navigation Solutions, LLC
  *
@@ -33,7 +34,8 @@ class Robot
 	//Motion variables
 	float mDisplacementRight;
 	float mDisplacementLeft;
-	float mAngle;
+	float mDisplacement;
+	float mRotation;
 
 	//Timing variables
 	float mPeriod;
@@ -49,9 +51,10 @@ class Robot
 		virtual ~Robot();
 		virtual int readSensors() = 0;
 		virtual void setActuators(char *motorSpeed) = 0;
-		inline float getEncoders(char side){return(side == LEFT) ? mDisplacementLeft : mDisplacementRight;};
+		inline float getDisplacement(){return mDisplacementLeft;};
+		inline float getEndoderScaleFactor(){return mEncoderScaleFactor;};
 		inline float getTrack(){return mTrack;};
-		inline float getAngle(){return mAngle;};
+		inline float getAngle(){return mRotation;};
 		inline float getPeriod(){return mPeriod;};
 };
 

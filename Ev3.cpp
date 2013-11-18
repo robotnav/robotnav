@@ -1,5 +1,6 @@
 /*
  * Robot Navigation Program
+ * www.robotnav.com
  *
  * (C) Copyright 2013 Navigation Solutions, LLC
  *
@@ -27,13 +28,14 @@
 #include "MathFunctions.h"
 
 using namespace std;
+const char MOTOR_PORT_OFFSET = 'A';
 
 Ev3::Ev3(float period, float track, float encoderScaleFactor, char *motorInfo, char *sensorInfo) : Robot(period, track, encoderScaleFactor)
 {
 	//This type of robot does not use any sensor, besides encoders, which are defined by the motor information
 	//The motor port is the one shown in the Ev3 label
-	mLeftEncoderPort = 	motorInfo[LEFT] - 1;
-	mRightEncoderPort = 	motorInfo[RIGHT] - 1;
+	mLeftEncoderPort = 	motorInfo[LEFT] - MOTOR_PORT_OFFSET;
+	mRightEncoderPort = 	motorInfo[RIGHT] - MOTOR_PORT_OFFSET;
 	mLeftMotorPort = pow(2, mLeftEncoderPort);
 	mRightMotorPort = pow(2, mRightEncoderPort);
 
@@ -41,14 +43,14 @@ Ev3::Ev3(float period, float track, float encoderScaleFactor, char *motorInfo, c
 	if((mMotorDevFile = open(PWM_DEVICE_NAME, O_WRONLY)) == -1)
 	{
 		cout << "Failed to open motor device\n";
-		return; //Failed to open device
+		return;
 	}
 
 	//Open the device file asscoiated to the motor encoders 
 	if((mEncoderDevFile = open(MOTOR_DEVICE_NAME, O_RDWR | O_SYNC)) == -1)
 	{
 		cout << "Failed to open encoder device\n";
-		return; //Failed to open device
+		return;
 	}
 
 	pMotorData = (MOTORDATA*)mmap(0, sizeof(MOTORDATA)*vmOUTPUTS, PROT_READ | PROT_WRITE, MAP_FILE | MAP_SHARED, mEncoderDevFile, 0);
@@ -76,6 +78,8 @@ Ev3::Ev3(float period, float track, float encoderScaleFactor, char *motorInfo, c
 
 Ev3::~Ev3()
 {
+	char motor_aux[] = {0,0};
+	setActuators(motor_aux);
 	close(mEncoderDevFile);
 	close(mMotorDevFile);
 	cout << "Ev3 Robot closed!\n";
@@ -92,38 +96,39 @@ int Ev3::readSensors()
 	//Compute wheel linear displacements
 	mDisplacementLeft = (new_count_left - s_last_count_left) * mEncoderScaleFactor;
 	mDisplacementRight = (new_count_right - s_last_count_right) * mEncoderScaleFactor;
-	mAngle = (mDisplacementLeft - mDisplacementRight) / mTrack;
+	
+	//Compute robot average displacement and rotation
+	mDisplacement = (mDisplacementLeft + mDisplacementRight) / 2.0;
+	mRotation = (mDisplacementLeft - mDisplacementRight) / mTrack;
 
 	//Store last encoder state
 	s_last_count_left = new_count_left;
 	s_last_count_right = new_count_right;
 	
-	cout << "EV3: " << " " << mDisplacementLeft << " " << mDisplacementRight << " " << math_functions::rad2deg(mAngle) << endl;
+	cout << "EV3 ACTUAL SPEED: " << " " << mDisplacementLeft/mEncoderScaleFactor/mPeriod << " " << mDisplacementRight/mEncoderScaleFactor/mPeriod << " " << mDisplacement << " " << math_functions::rad2deg(mRotation) << endl;
 	return DATA_READY;
 }
 
 void Ev3::setActuators(char *motorSpeed)
 {
-	char left_speed = motorSpeed[LEFT];
-	char right_speed = motorSpeed[RIGHT];
 	char motor_command[3];
 	motor_command[0] = opOUTPUT_SPEED;
 	motor_command[1] = mLeftMotorPort; 
-	motor_command[2] = left_speed;
+	motor_command[2] = motorSpeed[LEFT];
 	write(mMotorDevFile, motor_command, 3);
 
 	motor_command[0] = opOUTPUT_SPEED;
 	motor_command[1] = mRightMotorPort; 
-	motor_command[2] = right_speed;
+	motor_command[2] = motorSpeed[RIGHT];
 	write(mMotorDevFile, motor_command, 3);
 	
-	cout << "SPEED: " << (int)left_speed << "," << (int)right_speed << endl;
+	cout << "EV3 SET SPEED: " << (int)motorSpeed[LEFT] << " " << (int)motorSpeed[RIGHT] << endl;
 	checkTimming();
 }
 
 void Ev3::checkTimming()
 {
 	//This function is not fully implemented, but does not affect positioning accuracy
-	usleep(mPeriod*1000000);
+	usleep(mPeriod * 1000000 -12000);
 	Robot::checkTimming();
 }
