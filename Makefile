@@ -1,6 +1,6 @@
-OBJS = Robot.o Ev3.o Xg1300lGyro.o Odometry.o InputKeys.o Keyboard.o MathFunctions.o
+OBJS = Robot.o Ev3.o Xg1300lGyro.o Odometry.o Control.o InputKeys.o Keyboard.o MathFunctions.o
 CC = arm-none-linux-gnueabi-g++
-CFLAGS = -g -Wall -static 
+CFLAGS = -g -Wall -static
 TARGET = main
 
 all: $(TARGET)
@@ -14,6 +14,8 @@ Xg1300lGyro.o: Xg1300lGyro.cpp Xg1300lGyro.h Ev3.o MathFunctions.o
 	$(CC) $(CFLAGS) -c Xg1300lGyro.cpp
 Odometry.o: Odometry.cpp Odometry.h MathFunctions.o
 	$(CC) $(CFLAGS) -c Odometry.cpp
+Control.o: Control.cpp Control.h MathFunctions.o Odometry.o
+	$(CC) $(CFLAGS) -c Control.cpp
 InputKeys.o: InputKeys.cpp InputKeys.h
 	$(CC) $(CFLAGS) -c InputKeys.cpp
 Keyboard.o: Keyboard.cpp Keyboard.h InputKeys.o

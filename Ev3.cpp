@@ -28,14 +28,13 @@
 #include "MathFunctions.h"
 
 using namespace std;
-const char MOTOR_PORT_OFFSET = 'A';
 
-Ev3::Ev3(float period, float track, float encoderScaleFactor, char *motorInfo, char *sensorInfo) : Robot(period, track, encoderScaleFactor)
+Ev3::Ev3(float period, float track, float encoderScaleFactor, char *pMotorInfo, char *sensorInfo) : Robot(period, track, encoderScaleFactor)
 {
 	//This type of robot does not use any sensor, besides encoders, which are defined by the motor information
 	//The motor port is the one shown in the Ev3 label
-	mLeftEncoderPort = 	motorInfo[LEFT] - MOTOR_PORT_OFFSET;
-	mRightEncoderPort = 	motorInfo[RIGHT] - MOTOR_PORT_OFFSET;
+	mLeftEncoderPort = 	pMotorInfo[LEFT] - MOTOR_PORT_OFFSET;
+	mRightEncoderPort = 	pMotorInfo[RIGHT] - MOTOR_PORT_OFFSET;
 	mLeftMotorPort = pow(2, mLeftEncoderPort);
 	mRightMotorPort = pow(2, mRightEncoderPort);
 
@@ -99,7 +98,7 @@ int Ev3::readSensors()
 	
 	//Compute robot average displacement and rotation
 	mDisplacement = (mDisplacementLeft + mDisplacementRight) / 2.0;
-	mRotation = (mDisplacementLeft - mDisplacementRight) / mTrack;
+	mRotation = (mDisplacementRight - mDisplacementLeft) / mTrack;
 
 	//Store last encoder state
 	s_last_count_left = new_count_left;
@@ -109,21 +108,35 @@ int Ev3::readSensors()
 	return DATA_READY;
 }
 
-void Ev3::setActuators(char *motorSpeed)
+void Ev3::setActuators(char *pMotorSpeed)
 {
 	char motor_command[3];
+	//Left motor command
 	motor_command[0] = opOUTPUT_SPEED;
 	motor_command[1] = mLeftMotorPort; 
-	motor_command[2] = motorSpeed[LEFT];
+	motor_command[2] = pMotorSpeed[LEFT];
 	write(mMotorDevFile, motor_command, 3);
 
+	//Right motor command
 	motor_command[0] = opOUTPUT_SPEED;
 	motor_command[1] = mRightMotorPort; 
-	motor_command[2] = motorSpeed[RIGHT];
+	motor_command[2] = pMotorSpeed[RIGHT];
 	write(mMotorDevFile, motor_command, 3);
 	
-	cout << "EV3 SET SPEED: " << (int)motorSpeed[LEFT] << " " << (int)motorSpeed[RIGHT] << endl;
+	cout << "EV3 SET SPEED: " << (int)pMotorSpeed[LEFT] << " " << (int)pMotorSpeed[RIGHT] << endl;
 	checkTimming();
+}
+
+void Ev3::setActuators(float speed, float rate)
+{
+	int conuts_sec_aux[RIGHT+1];
+	speedRate2Counts(speed, rate, conuts_sec_aux);
+	char counts_sec[RIGHT+1];
+	//The following is needed, because the EV3 wants the speed in tenths of count per second
+	counts_sec[LEFT] = (char)(conuts_sec_aux[LEFT] / 10);
+	counts_sec[RIGHT] = (char)(conuts_sec_aux[RIGHT] / 10);
+	//Send motor commans
+	setActuators(counts_sec);
 }
 
 void Ev3::checkTimming()

@@ -26,9 +26,8 @@
 #include "MathFunctions.h"
 
 using namespace std;
-const char SENSOR_PORT_OFFSET = 1;
 
-Xg1300lGyro::Xg1300lGyro(float period, float track, float encoderScaleFactor, char *motorInfo, char *sensorInfo) : Ev3(period, track, encoderScaleFactor, motorInfo)
+Xg1300lGyro::Xg1300lGyro(float period, float track, float encoderScaleFactor, char *pMotorInfo, char *sensorInfo) : Ev3(period, track, encoderScaleFactor, pMotorInfo)
 {
 	IICDAT iic_dat;
 	mGyroPort = sensorInfo[0] - SENSOR_PORT_OFFSET;
@@ -57,6 +56,8 @@ Xg1300lGyro::Xg1300lGyro(float period, float track, float encoderScaleFactor, ch
 	// Setup I2C comunication
 	ioctl(mXglDevFile,IIC_SETUP,&iic_dat);
 
+	//Read sensors a first time in order to initialize some of the states
+	readSensors();
 	cout << "Xg1300lGyro Robot ready!\n";
 }
 
@@ -73,8 +74,8 @@ int Xg1300lGyro::readSensors()
 	//Get angle from XGL gyro
 	static float s_last_angle = 0;
 	short new_angle = pIic->Raw[mGyroPort][pIic->Actual[mGyroPort]][0]*256 + pIic->Raw[mGyroPort][pIic->Actual[mGyroPort]][1];
-	mRotation = (new_angle - s_last_angle)/100.0;
-	mRotation = math_functions::deg2rad(-mRotation);
+	mRotation = - (new_angle - s_last_angle)/100.0; //XGL angle must be inverted
+	mRotation = math_functions::deg2rad(mRotation);
 	mRotation = math_functions::unwrap(mRotation);
 	s_last_angle=new_angle;
 	

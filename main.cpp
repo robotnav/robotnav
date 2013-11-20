@@ -22,6 +22,7 @@
 #include "Ev3.h"
 #include "Xg1300lGyro.h"
 #include "Odometry.h"
+#include "Control.h"
 #include "InputKeys.h"
 #include "Keyboard.h"
 #include "MathFunctions.h"
@@ -40,70 +41,68 @@ const float WHEEL_DIAMETER = 43.0; // [mm]
 const float ENCODER_SCALE_FACTOR = PI * WHEEL_DIAMETER / COUNTS_REVOLUTION; // [mm/count]
 
 // Runtime constant
-const char INC_SPEED_COUNTS_SECOND = 5; // [count/sec]/10 - the kernel multiplies speed by 10
+const float INC_SPEED_MM_SECOND = 10.0; //[mm/sec]
+const float INC_RATE_RAD_SECOND = math_functions::deg2rad(10.0); //[rad/sec]
 const float PERIOD = 0.1; //[sec]
-
-// Available system status
-enum {QUIT_PROGRAM, KEYBOARD_CONTROL};
 
 int main()
 {
 	char motor_aux_info[] = {LEFT_MOTOR_PORT, RIGHT_MOTOR_PORT};
-	Robot *p_robot = new Ev3(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info); //Odomtery only
-	//Robot *p_robot = new Xg1300lGyro(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info, (char *)&XG1300L_GYRO_PORT); //Gyro Enhanced
-	InputKeys *p_keyboard = new Keyboard;
+	//Robot *p_robot = new Ev3(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info); //Odomtery only
+	Robot *p_robot = new Xg1300lGyro(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info, (char *)&XG1300L_GYRO_PORT); //Gyro Enhanced
 	Odometry odometry(p_robot); 
+	Control control(&odometry);
+	InputKeys *p_keyboard = new Keyboard;
 	
 	//Create and initialize speed variables
-	char right_speed = 0;
-	char left_speed = 0;
+	float speed = 0;
+	float rate = 0;
 
 	//Define and initialize the system status
-	int status = KEYBOARD_CONTROL;
+	bool quit_program = false;
 
 	//Enter control loop
-	while(status != QUIT_PROGRAM)
+	while(!quit_program)
 	{
 		//Read sensors
-		if(p_robot->readSensors() != DATA_READY)
-			status = QUIT_PROGRAM;
+		p_robot->readSensors();
 
 		//Compute robot position
 		odometry.updatePosition();
 
-		//Define some interesting instructions
+		//Check user input
 		switch(p_keyboard->getKey())
 		{
 		case MOVE_FORWARD:
-			right_speed += INC_SPEED_COUNTS_SECOND;
-			left_speed += INC_SPEED_COUNTS_SECOND;
+			speed += INC_SPEED_MM_SECOND;
 			break;
 		case MOVE_BACKWARDS:
-			right_speed -= INC_SPEED_COUNTS_SECOND;
-			left_speed -= INC_SPEED_COUNTS_SECOND;
+			speed -= INC_SPEED_MM_SECOND;
 			break;
 		case TURN_LEFT:
-			right_speed += INC_SPEED_COUNTS_SECOND;
-			left_speed -= INC_SPEED_COUNTS_SECOND;
+			rate += INC_RATE_RAD_SECOND;
 			break;
 		case TURN_RIGHT:
-			right_speed -= INC_SPEED_COUNTS_SECOND;
-			left_speed += INC_SPEED_COUNTS_SECOND;
+			rate -= INC_RATE_RAD_SECOND;
+			break;
+		case ENABLE_CONTROL:
+			control.enable();
 			break;
 		case EXIT:
-			status = QUIT_PROGRAM;
+			quit_program = true;
 		case RESET:
 			odometry.reset();
+			control.reset();
 		case STOP_ROBOT: 
-			right_speed = 0;
-			left_speed = 0;
+			speed = 0;
+			rate = 0;
 			break;
 		}
+		//Call high level control
+		control.getTargetSpeedRate(speed, rate);
 		
 		//Execute the instructions
-		motor_aux_info[LEFT] = left_speed;
-		motor_aux_info[RIGHT] = right_speed;
-		p_robot->setActuators(motor_aux_info);
+		p_robot->setActuators(speed, rate);
 	}
 
 	//Free used memory before exiting

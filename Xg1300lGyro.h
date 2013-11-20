@@ -20,6 +20,7 @@
 
 #ifndef XGL1300_GYRO_H
 #define XGL1300_GYRO_H
+
 #include "Ev3.h"
 #include "lms2012.h"
 
@@ -29,7 +30,7 @@ class Xg1300lGyro : public Ev3
 	int mXglDevFile;
 	int mGyroPort;
 	public:
-		Xg1300lGyro(float period, float track, float encoderScaleFactor, char *motorInfo, char *sensorInfo );
+		Xg1300lGyro(float period, float track, float encoderScaleFactor, char *pMotorInfo, char *sensorInfo );
 		virtual ~Xg1300lGyro();
 		virtual int readSensors();
 };

@@ -21,10 +21,11 @@
 #include <iostream>
 #include <sys/time.h>
 #include "Robot.h"
+#include "MathFunctions.h"
 
 using namespace std;
 
-Robot::Robot(float period, float track, float encoderScaleFactor, char *motorInfo, char *sensorInfo)
+Robot::Robot(float period, float track, float encoderScaleFactor, char *pMotorInfo, char *sensorInfo)
 {
 	//This constructor does not do anything with the motor and sensor information.
 	//That information is handled directly by each robot sub-class. This extra arguments are needed 
@@ -75,8 +76,25 @@ void Robot::checkTimming()
 	cout << "TIME[" << mCounter << "] " << time.tv_sec - mStartTimeSec << " " << time_diff_usec << " " << mMeanTimeUsec << " " << mMinTimeUsec << " " << mMaxTimeUsec << endl;
 	mCounter++;
 
-};
+}
 
+void Robot::speedRate2Counts(float speed, float rate, int *pCountSec)
+{
+	//Compute left and right encoder counts per second
+	float left_speed = (speed - rate * mTrack / 2.0) / mEncoderScaleFactor;
+	float right_speed = (speed + rate * mTrack / 2.0) / mEncoderScaleFactor;
+	
+	//Round values
+	if(left_speed > 0) pCountSec[LEFT] = (left_speed + .5); else pCountSec[LEFT] = (left_speed - 0.5);
+	if(right_speed > 0) pCountSec[RIGHT] = (right_speed + .5); else pCountSec[RIGHT] = (right_speed - 0.5);
 
+	//If there is some speed, we want to keep it
+	if(pCountSec[LEFT] == 0 && left_speed != 0) pCountSec[LEFT] = (left_speed > 0) ? 1 : -1;
+	if(pCountSec[RIGHT] == 0 && right_speed != 0) pCountSec[RIGHT] = (right_speed > 0) ? 1 : -1;
+	
+	cout << "ROBOT: " << speed << " " << math_functions::rad2deg(rate) << " " << left_speed << "/" << (int)pCountSec[LEFT] << " " << right_speed << "/" << (int)pCountSec[RIGHT] << endl;
+
+}
+	
 
 

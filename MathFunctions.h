@@ -22,6 +22,7 @@
 #define NAMESPACE_MATH_FUNCTIONS_H
 
 enum {X_AXIS, Y_AXIS, HEADING};
+enum {LEFT, RIGHT};
 const float PI = 3.14159265;
 const float ZERO=1e-6;
 

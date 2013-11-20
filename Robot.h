@@ -22,7 +22,6 @@
 #define ROBOT_H
 
 const int DATA_READY = 1;
-enum {LEFT, RIGHT};
 
 class Robot
 {
@@ -45,15 +44,15 @@ class Robot
 	int mMinTimeUsec;
 	int mStartTimeSec;
 	virtual void checkTimming();
+	void speedRate2Counts(float speed, float rate, int *pCountSec);
 
 	public:
-		Robot(float period, float track, float encoderScaleFactor, char *motorInfo = 0, char *sensorInfo = 0);
+		Robot(float period, float track, float encoderScaleFactor, char *pMotorInfo = 0, char *sensorInfo = 0);
 		virtual ~Robot();
 		virtual int readSensors() = 0;
-		virtual void setActuators(char *motorSpeed) = 0;
-		inline float getDisplacement(){return mDisplacementLeft;};
-		inline float getEndoderScaleFactor(){return mEncoderScaleFactor;};
-		inline float getTrack(){return mTrack;};
+		virtual void setActuators(char *pMotorSpeed) = 0;
+		virtual void setActuators(float speed, float rate) = 0;
+		inline float getDisplacement(){return mDisplacement;};
 		inline float getAngle(){return mRotation;};
 		inline float getPeriod(){return mPeriod;};
 };

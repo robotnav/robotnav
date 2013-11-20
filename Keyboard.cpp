@@ -55,15 +55,16 @@ char Keyboard::getKey()
 			return MOVE_FORWARD;
 		case 'B'://Backwards arrow key
 			return MOVE_BACKWARDS;
-		case 'C'://Left arrow key
+		case 'D'://Left arrow key
 			return TURN_LEFT;
-		case 'D'://Right arrow key
+		case 'C'://Right arrow key
 			return TURN_RIGHT;
+		case 'c':
+			return ENABLE_CONTROL;
 		case 'x':
 		case 'X':
 			return EXIT;
 		case 'r':
-		case 'R':
 			return RESET;
 		case 32: //Space bar
 			return STOP_ROBOT;

@@ -18,31 +18,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EV3_H
-#define EV3_H
 
-#include "Robot.h"
-#include "lms2012.h"
+#ifndef CONTROL
+#define CONTROL 
 
-const char MOTOR_PORT_OFFSET = 'A'; //First motor port label in EV3 Brick
-const char SENSOR_PORT_OFFSET = 1; //First sensor port label in EV3 Brick
+#include "Odometry.h"
 
-class Ev3 : public Robot
+const float FACE_NEXT_WAYPOINT = 100.0;
+
+class Control
 {
-	MOTORDATA *pMotorData;
-	int mMotorDevFile;
-	int mEncoderDevFile;
-	int mLeftMotorPort;
-	int mRightMotorPort;
-	int mLeftEncoderPort;
-	int mRightEncoderPort;
-	virtual void checkTimming();
-	public:
-		Ev3(float period, float track, float encoderScaleFactor, char *pMotorInfo, char *sensorInfo = 0);
-		virtual ~Ev3();
-		virtual int readSensors();
-		virtual void setActuators(char *pMotorSpeed);
-		virtual void setActuators(float speed, float rate);
-};
+	protected:
+	Odometry *mpOdometry;
+	float** mpWaypoints;
+	int mWaypointLength;
+	int mpWaypointIndex;
+	float mSpeed;
+	float mRate;
+	int mStatus;
+	float mPeriod;
 
-#endif
+	enum {STANBY_STS, STARTING_STS, TURNING_STS, FACING_ZERO_STS, MOVING_STS};
+	enum {MOVING_TO_WAYPOINT, FOUND_NEW_WAYPOINT, COMPLETED_WAYPOINT};
+
+	void cmpTargetDirDist(float &rRelativeDistance, float &rRelativeAngle);
+	virtual int freeHeading();
+	bool faceTarget(float targetAngle = FACE_NEXT_WAYPOINT);
+	void createWaypoints();
+public :
+	void enable();
+	void reset();
+	void getTargetSpeedRate(float &rSpeed, float &rRate);
+	Control(Odometry *pOdometry);
+	virtual ~Control();
+};
+#endif	
