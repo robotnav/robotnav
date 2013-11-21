@@ -77,7 +77,7 @@ Ev3::Ev3(float period, float track, float encoderScaleFactor, char *pMotorInfo, 
 
 Ev3::~Ev3()
 {
-	char motor_aux[] = {0,0};
+	char motor_aux[] = {0, 0};
 	setActuators(motor_aux);
 	close(mEncoderDevFile);
 	close(mMotorDevFile);
@@ -137,6 +137,7 @@ void Ev3::setActuators(float speed, float rate)
 	counts_sec[RIGHT] = (char)(conuts_sec_aux[RIGHT] / 10);
 	//Send motor commans
 	setActuators(counts_sec);
+	cout << "EV3 SPEED RATE: " << speed << " " << math_functions::rad2deg(rate) << endl;
 }
 
 void Ev3::checkTimming()

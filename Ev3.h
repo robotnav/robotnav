@@ -29,14 +29,15 @@ const char SENSOR_PORT_OFFSET = 1; //First sensor port label in EV3 Brick
 
 class Ev3 : public Robot
 {
-	MOTORDATA *pMotorData;
-	int mMotorDevFile;
 	int mEncoderDevFile;
 	int mLeftMotorPort;
 	int mRightMotorPort;
 	int mLeftEncoderPort;
 	int mRightEncoderPort;
 	virtual void checkTimming();
+	protected:
+		MOTORDATA *pMotorData;
+		int mMotorDevFile;
 	public:
 		Ev3(float period, float track, float encoderScaleFactor, char *pMotorInfo, char *sensorInfo = 0);
 		virtual ~Ev3();

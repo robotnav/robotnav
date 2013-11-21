@@ -57,20 +57,19 @@ int main()
 	//Create and initialize speed variables
 	float speed = 0;
 	float rate = 0;
-
-	//Define and initialize the system status
 	bool quit_program = false;
 
-	//Enter control loop
+	//Enter main loop
 	while(!quit_program)
 	{
 		//Read sensors
 		p_robot->readSensors();
 
-		//Compute robot position
+		//Compute position
 		odometry.updatePosition();
 
-		//Check user input
+		//Control instructions
+		//User defined instructions using keyboard
 		switch(p_keyboard->getKey())
 		{
 		case MOVE_FORWARD:
@@ -98,7 +97,7 @@ int main()
 			rate = 0;
 			break;
 		}
-		//Call high level control
+		//High level control instructions
 		control.getTargetSpeedRate(speed, rate);
 		
 		//Execute the instructions
