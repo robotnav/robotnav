@@ -48,8 +48,8 @@ const float PERIOD = 0.1; //[sec]
 int main()
 {
 	char motor_aux_info[] = {LEFT_MOTOR_PORT, RIGHT_MOTOR_PORT};
-	//Robot *p_robot = new Ev3(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info); //Odomtery only
-	Robot *p_robot = new Xg1300lGyro(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info, (char *)&XG1300L_GYRO_PORT); //Gyro Enhanced
+	Robot *p_robot = new Ev3(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info); //Odomtery only
+	//Robot *p_robot = new Xg1300lGyro(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info, (char *)&XG1300L_GYRO_PORT); //Gyro Enhanced
 	Odometry odometry(p_robot); 
 	Control control(&odometry);
 	InputKeys *p_keyboard = new Keyboard;
