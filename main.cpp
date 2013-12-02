@@ -21,6 +21,7 @@
 
 #include "Ev3.h"
 #include "Xg1300lGyro.h"
+#include "LegoGyro.h"
 #include "Odometry.h"
 #include "Control.h"
 #include "InputKeys.h"
@@ -31,8 +32,8 @@
 const char LEFT_MOTOR_PORT = 'D';
 const char RIGHT_MOTOR_PORT = 'A';
 
-//XGL1300L port, as shown in EV3 brick labels
-const char XG1300L_GYRO_PORT = 1;
+//Gyro port, as shown in EV3 brick labels
+const char GYRO_PORT = 1;
 
 //Platform measurements
 const float TRACK = 110.0; // [mm]
@@ -48,8 +49,10 @@ const float PERIOD = 0.1; //[sec]
 int main()
 {
 	char motor_aux_info[] = {LEFT_MOTOR_PORT, RIGHT_MOTOR_PORT};
-	Robot *p_robot = new Ev3(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info); //Odomtery only
-	//Robot *p_robot = new Xg1300lGyro(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info, (char *)&XG1300L_GYRO_PORT); //Gyro Enhanced
+	//Only one robot can be created at the time
+	Robot *p_robot = new Ev3(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info); //Odometry only
+	//Robot *p_robot = new Xg1300lGyro(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info, (char *)&GYRO_PORT); //Microinfinity XG1300L gyro
+	//Robot *p_robot = new LegoGyro(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info, (char *)&GYRO_PORT); //Lego EV3 gyro
 	Odometry odometry(p_robot); 
 	Control control(&odometry);
 	InputKeys *p_keyboard = new Keyboard;
