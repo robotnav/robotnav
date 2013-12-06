@@ -1,4 +1,4 @@
-OBJS = Robot.o Ev3.o Xg1300lGyro.o LegoGyro.o Odometry.o Control.o InputKeys.o Keyboard.o MathFunctions.o
+OBJS = Robot.o Ev3.o Xg1300lGyro.o LegoGyro.o Odometry.o Control.o InputKeys.o Keyboard.o IrRemote.o Buttons.o MathFunctions.o
 CC = arm-none-linux-gnueabi-g++
 CFLAGS = -g -Wall -static
 TARGET = main
@@ -22,6 +22,10 @@ InputKeys.o: InputKeys.cpp InputKeys.h
 	$(CC) $(CFLAGS) -c InputKeys.cpp
 Keyboard.o: Keyboard.cpp Keyboard.h InputKeys.o
 	$(CC) $(CFLAGS) -c Keyboard.cpp
+Buttons.o: Buttons.cpp Buttons.h InputKeys.o
+	$(CC) $(CFLAGS) -c Buttons.cpp
+IrRemote.o: IrRemote.cpp IrRemote.h InputKeys.o
+	$(CC) $(CFLAGS) -c IrRemote.cpp
 MathFunctions.o: MathFunctions.cpp MathFunctions.h
 	$(CC) $(CFLAGS) -c MathFunctions.cpp
 clean:

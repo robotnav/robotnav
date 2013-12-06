@@ -26,14 +26,17 @@
 #include "Control.h"
 #include "InputKeys.h"
 #include "Keyboard.h"
+#include "IrRemote.h"
+#include "Buttons.h"
 #include "MathFunctions.h"
 
 //Left and right motor ports, as shown in EV3 brick labels
 const char LEFT_MOTOR_PORT = 'D';
 const char RIGHT_MOTOR_PORT = 'A';
 
-//Gyro port, as shown in EV3 brick labels
+//Sensor ports, as shown in EV3 brick labels
 const char GYRO_PORT = 1;
+const char IR_PORT = 4;
 
 //Platform measurements
 const float TRACK = 110.0; // [mm]
@@ -52,10 +55,9 @@ int main()
 	//Only one robot can be created at the time
 	Robot *p_robot = new Ev3(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info); //Odometry only
 	//Robot *p_robot = new Xg1300lGyro(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info, (char *)&GYRO_PORT); //Microinfinity XG1300L gyro
-	//Robot *p_robot = new LegoGyro(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info, (char *)&GYRO_PORT); //Lego EV3 gyro
 	Odometry odometry(p_robot); 
-	Control control(&odometry);
 	InputKeys *p_keyboard = new Keyboard;
+	Control control(&odometry);
 	
 	//Create and initialize speed variables
 	float speed = 0;
@@ -71,8 +73,8 @@ int main()
 		//Compute position
 		odometry.updatePosition();
 
-		//Control instructions
-		//User defined instructions using keyboard
+		//Define control instructions
+		//User interaction 
 		switch(p_keyboard->getKey())
 		{
 		case MOVE_FORWARD:
@@ -100,7 +102,7 @@ int main()
 			rate = 0;
 			break;
 		}
-		//High level control instructions
+		//High level control
 		control.getTargetSpeedRate(speed, rate);
 		
 		//Execute the instructions
