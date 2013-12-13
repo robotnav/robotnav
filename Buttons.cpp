@@ -66,13 +66,13 @@ char Buttons::getKey()
 				case CENTER:
 					return ENABLE_CONTROL;
 				case RIGHT:
-					return TURN_LEFT;
-				case UP:
-					return MOVE_BACKWARDS;
-				case DOWN:
-					return MOVE_FORWARD;
-				case LEFT:
 					return TURN_RIGHT;
+				case UP:
+					return MOVE_FORWARD;
+				case DOWN:
+					return MOVE_BACKWARDS;
+				case LEFT:
+					return TURN_LEFT;
 			}
 			break;
 		}

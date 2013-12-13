@@ -19,6 +19,7 @@
  */
 
 #include <iostream>
+#include <cstring>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
@@ -54,10 +55,11 @@ Xg1300lGyro::Xg1300lGyro(float period, float track, float encoderScaleFactor, ch
 	// Specify the register that will be read (0x42 = angle)
 	iic_dat.WrData[1] = 0x42;
 	// Setup I2C comunication
-	ioctl(mXglDevFile,IIC_SETUP,&iic_dat);
+	ioctl(mXglDevFile, IIC_SETUP, &iic_dat);
 
 	//Read sensors a first time in order to initialize some of the states
 	readSensors();
+	strcpy(mName,"XGL");
 	cout << "Xg1300lGyro Robot ready!\n";
 }
 
@@ -77,7 +79,7 @@ int Xg1300lGyro::readSensors()
 	mRotation = - (new_angle - s_last_angle)/100.0; //XGL angle must be inverted
 	mRotation = math_functions::deg2rad(mRotation);
 	mRotation = math_functions::unwrap(mRotation);
-	s_last_angle=new_angle;
+	s_last_angle = new_angle;
 	
 	cout << "XG1300L: " << math_functions::rad2deg(mRotation) << endl;
 	return DATA_READY;

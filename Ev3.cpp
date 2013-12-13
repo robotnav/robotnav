@@ -19,6 +19,7 @@
  */
 
 #include <iostream>
+#include <cstring>
 #include <cmath>
 #include <fcntl.h>
 #include <sys/mman.h>
@@ -71,6 +72,7 @@ Ev3::Ev3(float period, float track, float encoderScaleFactor, char *pMotorInfo, 
 	write(mMotorDevFile, motor_command, 2);
 	
 	//Read sensors a first time in order to initialize some of the states
+	strcpy(mName,"EV3");
 	readSensors();
 	cout << "Ev3 Robot ready!\n";
 }
@@ -87,22 +89,20 @@ Ev3::~Ev3()
 int Ev3::readSensors()
 {
 	// Get robot displacement from encoders
-	static float s_last_count_left = 0;
-	static float s_last_count_right = 0;
 	int new_count_left = pMotorData[mLeftEncoderPort].TachoSensor;
 	int new_count_right = pMotorData[mRightEncoderPort].TachoSensor;
 
 	//Compute wheel linear displacements
-	mDisplacementLeft = (new_count_left - s_last_count_left) * mEncoderScaleFactor;
-	mDisplacementRight = (new_count_right - s_last_count_right) * mEncoderScaleFactor;
+	mDisplacementLeft = (new_count_left - mLastLeftEncoderCount) * mEncoderScaleFactor;
+	mDisplacementRight = (new_count_right - mLastRightEncoderCount) * mEncoderScaleFactor;
 	
 	//Compute robot average displacement and rotation
 	mDisplacement = (mDisplacementLeft + mDisplacementRight) / 2.0;
 	mRotation = (mDisplacementRight - mDisplacementLeft) / mTrack;
 
 	//Store last encoder state
-	s_last_count_left = new_count_left;
-	s_last_count_right = new_count_right;
+	mLastLeftEncoderCount = new_count_left;
+	mLastRightEncoderCount = new_count_right;
 	
 	cout << "EV3 ACTUAL SPEED: " << " " << mDisplacementLeft/mEncoderScaleFactor/mPeriod << " " << mDisplacementRight/mEncoderScaleFactor/mPeriod << " " << mDisplacement << " " << math_functions::rad2deg(mRotation) << endl;
 	return DATA_READY;

@@ -22,10 +22,12 @@
 #define ROBOT_H
 
 const int DATA_READY = 1;
+const int NAME_SIZE = 10;
 
 class Robot
 {
 	protected:
+	char mName[NAME_SIZE];
 	//Robot dimentions 
 	float mTrack;
 	float mEncoderScaleFactor;
@@ -39,9 +41,6 @@ class Robot
 	//Timing variables
 	float mPeriod;
 	int mCounter;
-	int mMeanTimeUsec;
-	int mMaxTimeUsec;
-	int mMinTimeUsec;
 	int mStartTimeSec;
 	virtual void checkTimming();
 	void speedRate2Counts(float speed, float rate, int *pCountSec);
@@ -52,9 +51,11 @@ class Robot
 		virtual int readSensors() = 0;
 		virtual void setActuators(char *pMotorSpeed) = 0;
 		virtual void setActuators(float speed, float rate) = 0;
-		inline float getDisplacement(){return mDisplacement;};
-		inline float getAngle(){return mRotation;};
-		inline float getPeriod(){return mPeriod;};
+		inline float getDisplacement() const {return mDisplacement;};
+		inline float getAngle() const {return mRotation;};
+		inline float getPeriod() const {return mPeriod;};
+		inline float getCounter() const {return mCounter;};
+		inline char *getName() {return mName;};
 };
 
 #endif

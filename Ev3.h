@@ -38,6 +38,8 @@ class Ev3 : public Robot
 	protected:
 		MOTORDATA *pMotorData;
 		int mMotorDevFile;
+		float mLastLeftEncoderCount ;
+		float mLastRightEncoderCount;
 	public:
 		Ev3(float period, float track, float encoderScaleFactor, char *pMotorInfo, char *sensorInfo = 0);
 		virtual ~Ev3();

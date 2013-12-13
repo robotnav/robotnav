@@ -35,9 +35,6 @@ Robot::Robot(float period, float track, float encoderScaleFactor, char *pMotorIn
 	timeval time;
 	gettimeofday(&time, 0);
 	mStartTimeSec = time.tv_sec;
-	mMeanTimeUsec = 0;
-	mMaxTimeUsec = 0;
-	mMinTimeUsec = 1000000; //Use an imposibly large value
 	mCounter = 1;
 	checkTimming(); //Initialize static time variables
 
@@ -45,7 +42,6 @@ Robot::Robot(float period, float track, float encoderScaleFactor, char *pMotorIn
 	mPeriod = period;
 	mTrack = track;
 	mEncoderScaleFactor = encoderScaleFactor;
-	
 	cout << "Robot ready!\n";
 }
 
@@ -56,24 +52,28 @@ Robot::~Robot()
 
 void Robot::checkTimming()
 {
-	static int last_time_usec;
+	static int s_mean_time_usec = 0;
+	static int s_max_time_usec = 0;
+	static int s_min_time_usec = 1000000; //Use an imposibly large value
+	static int s_last_time_usec;
+
 	timeval time;
 	int time_diff_usec;
 	gettimeofday(&time, NULL);
-	time_diff_usec = time.tv_usec - last_time_usec;
-	last_time_usec = time.tv_usec;
+	time_diff_usec = time.tv_usec - s_last_time_usec;
+	s_last_time_usec = time.tv_usec;
 	if(time_diff_usec < 0)
 		time_diff_usec += 1000000; //+1 sec
 
 	// Compute timming statistics
-	if(time_diff_usec < mMinTimeUsec)
-		mMinTimeUsec = time_diff_usec;
-	else if(time_diff_usec > mMaxTimeUsec)
-		mMaxTimeUsec = time_diff_usec;
-	mMeanTimeUsec = mMeanTimeUsec*(mCounter - 1) / mCounter + time_diff_usec / mCounter;
+	if(time_diff_usec < s_min_time_usec)
+		s_min_time_usec = time_diff_usec;
+	else if(time_diff_usec > s_max_time_usec)
+		s_max_time_usec = time_diff_usec;
+	s_mean_time_usec = s_mean_time_usec*(mCounter - 1) / mCounter + time_diff_usec / mCounter;
 	
 	// Display info
-	cout << "TIME[" << mCounter << "] " << time.tv_sec - mStartTimeSec << " " << time_diff_usec << " " << mMeanTimeUsec << " " << mMinTimeUsec << " " << mMaxTimeUsec << endl;
+	cout << "TIME[" << mCounter << "] " << time.tv_sec - mStartTimeSec << " " << time_diff_usec << " " << s_mean_time_usec << " " << s_min_time_usec << " " << s_max_time_usec << endl;
 	mCounter++;
 
 }

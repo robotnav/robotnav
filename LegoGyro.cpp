@@ -47,6 +47,7 @@ LegoGyro::LegoGyro(float period, float track, float encoderScaleFactor, char *pM
 
 	//Read sensors a first time in order to initialize some of the states
 	readSensors();
+	strcpy(mName,"LEGO");
 	cout << "LegoGyro Robot ready!\n";
 }
 
