@@ -24,7 +24,6 @@
 #include "LegoGyro.h"
 #include "Odometry.h"
 #include "Control.h"
-#include "InputKeys.h"
 #include "Keyboard.h"
 #include "IrRemote.h"
 #include "Buttons.h"
@@ -53,10 +52,10 @@ int main()
 {
 	char motor_aux_info[] = {LEFT_MOTOR_PORT, RIGHT_MOTOR_PORT};
 	//Only one robot can be created at the time
-	Robot *p_robot = new Ev3(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info); //Odometry only
-	//Robot *p_robot = new Xg1300lGyro(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info, (char *)&GYRO_PORT); //Microinfinity XG1300L gyro
-	Odometry odometry(p_robot); 
-	InputKeys *p_keyboard = new Keyboard;
+	Ev3 robot(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info); //Odometry only
+	//Xg1300lGyro robot(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info, (char *)&GYRO_PORT); //Microinfinity XG1300L gyro
+	Odometry odometry(&robot); 
+	Keyboard user_input;
 	Control control(&odometry);
 	
 	//Create and initialize speed variables
@@ -68,14 +67,14 @@ int main()
 	while(!quit_program)
 	{
 		//Read sensors
-		p_robot->readSensors();
+		robot.readSensors();
 
 		//Compute position
 		odometry.updatePosition();
 
 		//Define control instructions
 		//User interaction 
-		switch(p_keyboard->getKey())
+		switch(user_input.getKey())
 		{
 		case MOVE_FORWARD:
 			speed += INC_SPEED_MM_SECOND;
@@ -96,7 +95,6 @@ int main()
 			quit_program = true;
 		case RESET:
 			odometry.reset();
-			control.reset();
 		case STOP_ROBOT: 
 			speed = 0;
 			rate = 0;
@@ -106,11 +104,8 @@ int main()
 		control.getTargetSpeedRate(speed, rate);
 		
 		//Execute the instructions
-		p_robot->setActuators(speed, rate);
+		robot.setActuators(speed, rate);
 	}
 
-	//Free used memory before exiting
-	delete p_keyboard;
-	delete p_robot;
 	return 1;
 }

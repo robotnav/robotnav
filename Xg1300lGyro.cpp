@@ -21,6 +21,7 @@
 #include <iostream>
 #include <cstring>
 #include <fcntl.h>
+#include <unistd.h>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 #include "Xg1300lGyro.h"

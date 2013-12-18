@@ -1,6 +1,6 @@
 OBJS = Robot.o Ev3.o Xg1300lGyro.o LegoGyro.o Odometry.o Control.o InputKeys.o Keyboard.o IrRemote.o Buttons.o MathFunctions.o
 CC = arm-none-linux-gnueabi-g++
-CFLAGS = -g -Wall -static
+CFLAGS = -Wall -static
 TARGET = main
 
 all: $(TARGET)

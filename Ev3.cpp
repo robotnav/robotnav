@@ -129,12 +129,12 @@ void Ev3::setActuators(char *pMotorSpeed)
 
 void Ev3::setActuators(float speed, float rate)
 {
-	int conuts_sec_aux[RIGHT+1];
-	speedRate2Counts(speed, rate, conuts_sec_aux);
+	int counts_sec_aux[RIGHT+1];
+	speedRate2Counts(speed, rate, counts_sec_aux);
 	char counts_sec[RIGHT+1];
 	//The following is needed, because the EV3 wants the speed in tenths of count per second
-	counts_sec[LEFT] = (char)(conuts_sec_aux[LEFT] / 10);
-	counts_sec[RIGHT] = (char)(conuts_sec_aux[RIGHT] / 10);
+	counts_sec[LEFT] = (char)(counts_sec_aux[LEFT] / 10);
+	counts_sec[RIGHT] = (char)(counts_sec_aux[RIGHT] / 10);
 	//Send motor commans
 	setActuators(counts_sec);
 	cout << "EV3 SPEED RATE: " << speed << " " << math_functions::rad2deg(rate) << endl;
