@@ -2,7 +2,7 @@
  * Robot Navigation Program
  * www.robotnav.com
  *
- * (C) Copyright 2013 Navigation Solutions, LLC
+ * (C) Copyright 2013 - 2014 Navigation Solutions, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,10 @@
 
 using namespace std;
 
+//More information about modes can be found at http://python-ev3.org/types.html
+const char GYRO_ANG_MODE = 0; // Use Gyro in Angle mode
+const char GYRO_SENSOR_TYPE = 32;
+
 LegoGyro::LegoGyro(float period, float track, float encoderScaleFactor, char *pMotorInfo, char *sensorInfo) : Ev3(period, track, encoderScaleFactor, pMotorInfo)
 {
 	mGyroPort = sensorInfo[0] - SENSOR_PORT_OFFSET;
@@ -45,9 +49,16 @@ LegoGyro::LegoGyro(float period, float track, float encoderScaleFactor, char *pM
 		return;
 	}
 
+	DEVCON dev_con; // Configuration parameters
+	dev_con.Mode[mGyroPort] = GYRO_ANG_MODE;
+	dev_con.Connection[mGyroPort] = CONN_INPUT_UART;
+	dev_con.Type[mGyroPort] = GYRO_SENSOR_TYPE; //This instruction has no effect in the code
+	ioctl(mLegoGyroDevFile, UART_SET_CONN, &dev_con);
+	
+	strcpy(mName,"LEG");
+
 	//Read sensors a first time in order to initialize some of the states
 	readSensors();
-	strcpy(mName,"LEGO");
 	cout << "LegoGyro Robot ready!\n";
 }
 

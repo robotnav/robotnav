@@ -2,7 +2,7 @@
  * Robot Navigation Program
  * www.robotnav.com
  *
- * (C) Copyright 2013 Navigation Solutions, LLC
+ * (C) Copyright 2010 - 2014 Navigation Solutions, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,10 +93,11 @@ void Control::getTargetSpeedRate(float &rSpeed, float &rRate)
 //Free heading control
 int Control::freeHeading()
 {
+	static float s_last_dist = TARGET_ANGLE;
+	
 	if(mpWaypointIndex >= mWaypointLength)
 		return COMPLETED_WAYPOINT;
 
-	float s_last_dist;
 	float target_dist;
 	float target_ang;
 	cmpTargetDirDist(target_dist, target_ang);
@@ -122,10 +123,11 @@ int Control::freeHeading()
 		if(s_last_dist < target_dist || target_dist < MIN_TARGET_DIST)
 		{
 			mpWaypointIndex++;
+			s_last_dist = TARGET_ANGLE;
 			return ((mpWaypointIndex >= mWaypointLength) ? COMPLETED_WAYPOINT : FOUND_NEW_WAYPOINT);
 		}
+ 		s_last_dist = target_dist;
 	}
- 	s_last_dist = target_dist;
 	return MOVING_TO_WAYPOINT;
 }
 
@@ -167,6 +169,13 @@ bool Control::faceTarget(float targetAngle)
 void Control::enable()
 {
 	mStatus = STARTING_STS;
+}
+
+void Control::disable()
+{
+	mSpeed = 0.0;
+	mRate = 0.0;
+	mStatus = STANBY_STS;
 }
 
 void Control::createWaypoints()

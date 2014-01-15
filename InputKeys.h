@@ -2,7 +2,7 @@
  * Robot Navigation Program
  * www.robotnav.com
  *
- * (C) Copyright 2013 Navigation Solutions, LLC
+ * (C) Copyright 2013, 2014 Navigation Solutions, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 #ifndef INPUT_KEYS_H
 #define INPUT_KEYS_H
 
-enum{NO_INPUT = -1, EXIT, STOP_ROBOT, RESET, MOVE_FORWARD, MOVE_BACKWARDS, TURN_LEFT, TURN_RIGHT, ENABLE_CONTROL};
+enum{NO_INPUT = -1, EXIT, STOP_ROBOT, RESET, MOVE_FORWARD, MOVE_BACKWARDS, TURN_LEFT, TURN_RIGHT, ENABLE_CONTROL, PAUSE};
 
 class InputKeys
 {

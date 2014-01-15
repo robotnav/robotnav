@@ -2,7 +2,7 @@
 	* Robot Navigation
 	* www.robotnav.com
 	*
-	* (C) Copyright 2013 Navigation Solutions, LLC
+	* (C) Copyright 2013 - 2014 Navigation Solutions, LLC
 	*
 	* This program is free software: you can redistribute it and/or modify
 	* it under the terms of the GNU General Public License as published by
@@ -33,6 +33,8 @@
 const char LEFT_MOTOR_PORT = 'D';
 const char RIGHT_MOTOR_PORT = 'A';
 
+char MOTOR_PORTS[] = {LEFT_MOTOR_PORT, RIGHT_MOTOR_PORT};
+
 //Sensor ports, as shown in EV3 brick labels
 const char GYRO_PORT = 1;
 const char IR_PORT = 4;
@@ -50,10 +52,9 @@ const float PERIOD = 0.1; //[sec]
 
 int main()
 {
-	char motor_aux_info[] = {LEFT_MOTOR_PORT, RIGHT_MOTOR_PORT};
 	//Only one robot can be created at the time
-	Ev3 robot(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info); //Odometry only
-	//Xg1300lGyro robot(PERIOD, TRACK, ENCODER_SCALE_FACTOR, motor_aux_info, (char *)&GYRO_PORT); //Microinfinity XG1300L gyro
+	Ev3 robot(PERIOD, TRACK, ENCODER_SCALE_FACTOR, (char *)MOTOR_PORTS); //Odometry only
+	//Xg1300lGyro robot(PERIOD, TRACK, ENCODER_SCALE_FACTOR, (char *)MOTOR_PORTS, (char *)&GYRO_PORT); //Gyro Enhanced
 	Odometry odometry(&robot); 
 	Keyboard user_input;
 	Control control(&odometry);
@@ -98,6 +99,7 @@ int main()
 		case STOP_ROBOT: 
 			speed = 0;
 			rate = 0;
+			control.disable();
 			break;
 		}
 		//High level control

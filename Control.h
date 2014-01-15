@@ -2,7 +2,7 @@
  * Robot Navigation Program
  * www.robotnav.com
  *
- * (C) Copyright 2013 Navigation Solutions, LLC
+ * (C) Copyright 2010 - 2014 Navigation Solutions, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,9 +45,10 @@ class Control
 	virtual int freeHeading();
 	bool faceTarget(float targetAngle = FACE_NEXT_WAYPOINT);
 	void createWaypoints();
+	void reset();
 public :
 	void enable();
-	void reset();
+	void disable();
 	void getTargetSpeedRate(float &rSpeed, float &rRate);
 	Control(Odometry *pOdometry);
 	virtual ~Control();
