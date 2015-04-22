@@ -2,7 +2,7 @@
  * Robot Navigation Program
  * www.robotnav.com
  *
- * (C) Copyright 2010 - 2013 Navigation Solutions, LLC
+ * (C) Copyright 2010 - 2014 Lauro Ojeda
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

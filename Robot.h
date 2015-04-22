@@ -2,7 +2,7 @@
  * Robot Navigation Program
  * www.robotnav.com
  *
- * (C) Copyright 2010-2014 Navigation Solutions, LLC
+ * (C) Copyright 2010 - 2014 Lauro Ojeda
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,11 +21,16 @@
 #ifndef ROBOT_H
 #define ROBOT_H
 
+#include <sys/time.h>
+
 const int DATA_READY = 1;
 const int NAME_SIZE = 10;
+const float SEC2USEC = 1e6;
 
 class Robot
 {
+	private:
+	timeval mStartTimeSec;
 	protected:
 	char mName[NAME_SIZE];
 	//Robot dimentions 
@@ -37,12 +42,14 @@ class Robot
 	float mDisplacementLeft;
 	float mDisplacement;
 	float mRotation;
+	int mEncoderCountSecLimit;
 
 	//Timing variables
 	float mPeriod;
 	int mCounter;
-	int mStartTimeSec;
-	virtual void checkTimming();
+	bool mWaitForPeriod;
+	void checkTimming();
+
 	void speedRate2Counts(float speed, float rate, int *pCountSec);
 
 	public:
@@ -51,6 +58,7 @@ class Robot
 		virtual int readSensors() = 0;
 		virtual void setActuators(char *pMotorSpeed) = 0;
 		virtual void setActuators(float speed, float rate) = 0;
+		virtual void setEncoderLimit(int pCountSecLimit);
 		inline float getDisplacement() const {return mDisplacement;};
 		inline float getAngle() const {return mRotation;};
 		inline float getPeriod() const {return mPeriod;};

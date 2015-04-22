@@ -2,7 +2,7 @@
  * Robot Navigation Program
  * www.robotnav.com
  *
- * (C) Copyright 2013 - 2014 Navigation Solutions, LLC
+ * (C) Copyright 2013 - 2014 Lauro Ojeda
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,20 +129,19 @@ void Ev3::setActuators(char *pMotorSpeed)
 
 void Ev3::setActuators(float speed, float rate)
 {
-	int counts_sec_aux[RIGHT+1];
+	int counts_sec_aux[RIGHT + 1];
 	speedRate2Counts(speed, rate, counts_sec_aux);
-	char counts_sec[RIGHT+1];
+	char counts_sec[RIGHT + 1];
 	//The following is needed, because the EV3 wants the speed in tenths of count per second
 	counts_sec[LEFT] = (char)(counts_sec_aux[LEFT] / 10);
 	counts_sec[RIGHT] = (char)(counts_sec_aux[RIGHT] / 10);
+
+	// Make sure that if not zero, it sets some speed
+	if(!counts_sec[LEFT] && counts_sec_aux[LEFT]) counts_sec[LEFT] = (counts_sec_aux[LEFT] > 0) ? 1 : -1;
+	if(!counts_sec[RIGHT] && counts_sec_aux[RIGHT]) counts_sec[RIGHT] = (counts_sec_aux[RIGHT] > 0) ? 1 : -1;
+
 	//Send motor commans
 	setActuators(counts_sec);
 	cout << "EV3 SPEED RATE: " << speed << " " << math_functions::rad2deg(rate) << endl;
 }
 
-void Ev3::checkTimming()
-{
-	//This function is not fully implemented, but does not affect positioning accuracy
-	usleep(mPeriod * 1000000 -12000);
-	Robot::checkTimming();
-}
