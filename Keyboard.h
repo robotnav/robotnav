@@ -18,58 +18,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <unistd.h>
-#include <sys/time.h>
-#include "Keyboard.h"
+#ifndef KEYBOARD_H 
+#define KEYBOARD_H 
 
-Keyboard::Keyboard()
-{
-	// Sets the terminal to get real-time keyboard values
-	tcgetattr(0, &mOrgTerm);
-	mNewTerm=mOrgTerm;
-	mNewTerm.c_lflag &= ~ICANON;
-	mNewTerm.c_lflag &= ~ECHO;
-	mNewTerm.c_cc[VMIN] = 1;
-	mNewTerm.c_cc[VTIME] = 0;
-	tcsetattr(0, TCSANOW, &mNewTerm);
-}
+#include <termios.h>
+#include "InputKeys.h"
 
-Keyboard::~Keyboard()
-{
-	tcsetattr(0, TCSANOW, &mOrgTerm);
-}
-
-char Keyboard::getKey()
+class Keyboard : public InputKeys
 {
 
-	// Return keyboard value if any
-	struct timeval aux_time = {0, 0};
-	fd_set rfds;
-	char key = NO_INPUT;
-	FD_SET(0, &rfds);
-	if(select(1, &rfds, 0, 0, &aux_time))
-		read(0, &key, 1);
-	switch(key)
-	{
-		case 'A'://Forward arrow key
-			return MOVE_FORWARD;
-		case 'B'://Backwards arrow key
-			return MOVE_BACKWARDS;
-		case 'D'://Left arrow key
-			return TURN_LEFT;
-		case 'C'://Right arrow key
-			return TURN_RIGHT;
-		case 'c':
-			return ENABLE_CONTROL;
-		case 'x':
-		case 'X':
-			return EXIT;
-		case 'r':
-			return RESET;
-		case 32: //Space bar
-			return STOP_ROBOT;
-		case 'p':
-			return PAUSE;
-	}
-	return key;
-}
+	// Terminal setting functions and variables
+	struct termios mNewTerm;
+	struct termios mOrgTerm;
+	public:
+		Keyboard();
+		virtual ~Keyboard();
+		virtual char getKey();
+
+};
+
+#endif
