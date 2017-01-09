@@ -1,8 +1,9 @@
 /*
+ *
  * Robot Navigation Program
  * www.robotnav.com
  *
- * (C) Copyright 2013 - 2014 Lauro Ojeda
+ * (C) Copyright 2013 - 2016 Lauro Ojeda
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,19 +33,27 @@ class Ev3 : public Robot
 	int mEncoderDevFile;
 	int mLeftMotorPort;
 	int mRightMotorPort;
+	int mMarkerMotorPort;
 	int mLeftEncoderPort;
 	int mRightEncoderPort;
+	int mMarkerEncoderPort;
+	
+	bool mUsesMarkerMotor;
+	int mOrigMarker;
+	int mCountMarker;
 	protected:
 		MOTORDATA *pMotorData;
 		int mMotorDevFile;
 		float mLastLeftEncoderCount ;
 		float mLastRightEncoderCount;
 	public:
-		Ev3(float period, float track, float encoderScaleFactor, char *pMotorInfo, char *sensorInfo = 0);
+		Ev3(float period, float track, float encoderScaleFactor, char *pMotorInfo);
 		virtual ~Ev3();
 		virtual int readSensors();
+		virtual void setExtraMotor(char motorInfo);
 		virtual void setActuators(char *pMotorSpeed);
 		virtual void setActuators(float speed, float rate);
+		void setMarker(int markerTarget);
 };
 
 #endif

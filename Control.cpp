@@ -2,7 +2,7 @@
  * Robot Navigation Program
  * www.robotnav.com
  *
- * (C) Copyright 2010 - 2014 Lauro Ojeda
+ * (C) Copyright 2010 - 2016 Lauro Ojeda
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ const float DIST_ANGLE_ANGLE_RATE_GAIN = 0.5; //Rate control
 const float ANGLE_RATE_GAIN = 1.5; 
 
 //Dynamic constants
-const float	MAX_RATE = math_functions::deg2rad(40.0); //[deg/sec]
+const float	MAX_RATE = math_functions::deg2rad(80.0); //[deg/sec]
 const float	MAX_SPEED = 50.0; //[mm/sec]
 const float	MIN_SPEED = 30.0; //[mm/sec]
 const float	TARGET_DIST = 15.0; //[mm]
@@ -93,7 +93,7 @@ void Control::getTargetSpeedRate(float &rSpeed, float &rRate)
 //Free heading control
 int Control::freeHeading()
 {
-	static float s_last_dist = TARGET_ANGLE;
+	static float s_last_dist = TARGET_DIST;
 	
 	if(mpWaypointIndex >= mWaypointLength)
 		return COMPLETED_WAYPOINT;
@@ -123,7 +123,7 @@ int Control::freeHeading()
 		if(s_last_dist < target_dist || target_dist < MIN_TARGET_DIST)
 		{
 			mpWaypointIndex++;
-			s_last_dist = TARGET_ANGLE;
+			s_last_dist = TARGET_DIST;
 			return ((mpWaypointIndex >= mWaypointLength) ? COMPLETED_WAYPOINT : FOUND_NEW_WAYPOINT);
 		}
  		s_last_dist = target_dist;
@@ -180,16 +180,18 @@ void Control::disable()
 
 void Control::createWaypoints()
 {
-	reset();
+	deleteWaypoints();
+	//reset();
 	mWaypointLength = 1;
 	mpWaypoints = new float*[mWaypointLength];
 	mpWaypoints[0] = new float[Y_AXIS + 1];
 	mpWaypoints[0][X_AXIS] = 0.0;
 	mpWaypoints[0][Y_AXIS] = 0.0;
+	mpWaypointIndex = 0;
 	mStatus = STARTING_STS;
 }
 
-void Control::reset()
+void Control::deleteWaypoints()
 {
 	if(mWaypointLength)
 	{
@@ -198,6 +200,11 @@ void Control::reset()
 		delete [] mpWaypoints;
 		mWaypointLength = 0;
 	}
+}
+
+void Control::reset()
+{
+	deleteWaypoints();
 	mpWaypointIndex = 0;
 	mSpeed = 0.0;
 	mRate = 0.0;

@@ -36,7 +36,6 @@ const char MARKER_MOTOR_PORT = 'C';
 //XGL1300L port, as shown in EV3 brick labels
 const char XG1300L_GYRO_PORT = 1;
 const char LEGO_GYRO_PORT = 4;
-const char IR_PORT = 4;
 const char MOTOR_PORTS[] =  {LEFT_MOTOR_PORT, RIGHT_MOTOR_PORT};
 
 //Platform measurements
@@ -54,7 +53,7 @@ const float PERIOD = 1/50.0; //[sec]
 const int PENCIL_INC = 100;
 
 // Position estimation mode
-#define XGL_GYRO
+#define LEGO_GYRO 
 // User input mode
 #define INPUT_KEYBOARD
 
@@ -70,11 +69,11 @@ int main()
 #if defined NO_GYRO
 	Ev3 robot(PERIOD, TRACK, ENCODER_SCALE_FACTOR, (char *)MOTOR_PORTS); //Odometry only
 #elif defined LEGO_GYRO
-	LegoGyro robot(PERIOD, TRACK, ENCODER_SCALE_FACTOR, (char *)MOTOR_PORTS, (char *)&LEGO_GYRO_PORT); //Gyro Enhanced
-#elif defined XGL_GYRO
-	Xg1300lGyro robot(PERIOD, TRACK, ENCODER_SCALE_FACTOR, (char *)MOTOR_PORTS, (char *)&XG1300L_GYRO_PORT); //Gyro Enhanced
+	LegoGyro robot(PERIOD, TRACK, ENCODER_SCALE_FACTOR, (char *)MOTOR_PORTS, (char *)&LEGO_GYRO_PORT); //LEGO Gyro Enhanced
+#elif defined XG1300L_GYRO
+	Xg1300lGyro robot(PERIOD, TRACK, ENCODER_SCALE_FACTOR, (char *)MOTOR_PORTS, (char *)&XG1300L_GYRO_PORT); //Microinfinity Gyro Enhanced
 #else
-#error
+	#error
 #endif
 	Odometry odometry(&robot); 
 	TicTacToe control(&odometry);

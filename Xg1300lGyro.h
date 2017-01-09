@@ -2,7 +2,7 @@
  * Robot Navigation Program
  * www.robotnav.com
  *
- * (C) Copyright 2010 - 2014 Lauro Ojeda
+ * (C) Copyright 2013 - 2016 Lauro Ojeda
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,13 +24,17 @@
 #include "Ev3.h"
 #include "lms2012.h"
 
+const float GYRO_NORMAL = -1.0;
+const float GYRO_UPSIDEDOWN = 1.0;
+
 class Xg1300lGyro : public Ev3
 {
 	IIC  *pIic;
 	int mXglDevFile;
 	int mGyroPort;
+	float mRateSign;
 	public:
-		Xg1300lGyro(float period, float track, float encoderScaleFactor, char *pMotorInfo, char *sensorInfo );
+		Xg1300lGyro(float period, float track, float encoderScaleFactor, char *pMotorInfo, char *sensorInfo, float rateSign = GYRO_NORMAL);
 		virtual ~Xg1300lGyro();
 		virtual int readSensors();
 };

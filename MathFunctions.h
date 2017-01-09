@@ -2,7 +2,7 @@
  * Robot Navigation Program
  * www.robotnav.com
  *
- * (C) Copyright 2010 - 2014 Lauro Ojeda
+ * (C) Copyright 2010 - 2016 Lauro Ojeda
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 enum {X_AXIS, Y_AXIS, HEADING};
 enum {LEFT, RIGHT};
 const float PI = 3.14159265;
-const float ZERO=1e-6;
+const float ZERO = 1e-6;
 
 namespace math_functions
 {

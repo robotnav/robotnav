@@ -2,7 +2,7 @@
  * Robot Navigation Program
  * www.robotnav.com
  *
- * (C) Copyright 2013 - 2014 Lauro Ojeda
+ * (C) Copyright 2013 - 2016 Lauro Ojeda
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@ char Buttons::getKey()
 	{
 		if(pButtons->Pressed[key]) 
 		{
+			pButtons->Pressed[key] = 0; 
 			//Allow only one key return per push
 			if (key == s_last_key)
 				return NO_INPUT;
@@ -75,6 +76,26 @@ char Buttons::getKey()
 					return TURN_LEFT;
 			}
 			break;
+		}
+	}
+	s_last_key = NO_INPUT;
+	return NO_INPUT;
+}
+
+char Buttons::getKeyRaw()
+{
+	char static s_last_key = NO_INPUT;
+	for(int key = 0; key < BUTTONS; key++)
+	{
+		if(pButtons->Pressed[key]) 
+		{
+			pButtons->Pressed[key] = 0; 
+			//Allow only one key return per push
+			if (key == s_last_key)
+				return NO_INPUT;
+			cout << "BUTTONS " << key << endl;
+			s_last_key = key;
+			return key;
 		}
 	}
 	s_last_key = NO_INPUT;

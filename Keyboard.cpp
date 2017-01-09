@@ -2,7 +2,7 @@
  * Robot Navigation Program
  * www.robotnav.com
  *
- * (C) Copyright 2010 - 2014 Lauro Ojeda
+ * (C) Copyright 2010 - 2016 Lauro Ojeda
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,10 @@ char Keyboard::getKey()
 			return TURN_RIGHT;
 		case 'c':
 			return ENABLE_CONTROL;
+		case 'm':
+			return MARKER_UP;
+		case 'M':
+			return MARKER_DOWN;
 		case 'x':
 		case 'X':
 			return EXIT;
@@ -71,5 +75,6 @@ char Keyboard::getKey()
 		case 'p':
 			return PAUSE;
 	}
+	// It it is not a knon key, return it anyways
 	return key;
 }

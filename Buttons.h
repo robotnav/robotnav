@@ -2,7 +2,7 @@
  * Robot Navigation Program
  * www.robotnav.com
  *
- * (C) Copyright 2013 - 2014 Lauro Ojeda
+ * (C) Copyright 2013 - 2016 Lauro Ojeda
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,11 +28,13 @@ class Buttons: public InputKeys
 {
 	int mButtonsFile;
 	UI *pButtons;
+	protected:
 	enum {UP, CENTER, DOWN, RIGHT, LEFT, BACK};
 	public:
 		Buttons();
 		~Buttons();
 		char getKey();
+		char getKeyRaw();
 };
 
 #endif

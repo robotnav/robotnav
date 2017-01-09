@@ -2,7 +2,7 @@
  * Robot Navigation Program
  * www.robotnav.com
  *
- * (C) Copyright 2010 - 2014 Lauro Ojeda
+ * (C) Copyright 2013 - 2016 Lauro Ojeda
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,9 +29,10 @@
 
 using namespace std;
 
-Xg1300lGyro::Xg1300lGyro(float period, float track, float encoderScaleFactor, char *pMotorInfo, char *sensorInfo) : Ev3(period, track, encoderScaleFactor, pMotorInfo)
+Xg1300lGyro::Xg1300lGyro(float period, float track, float encoderScaleFactor, char *pMotorInfo, char *sensorInfo, float rateSign) : Ev3(period, track, encoderScaleFactor, pMotorInfo)
 {
 	IICDAT iic_dat;
+	mRateSign = rateSign; // Allowes using the gyro upside down 1.0 or normal -1.0
 	mGyroPort = sensorInfo[0] - SENSOR_PORT_OFFSET;
 	//Open XGL device file
 	if((mXglDevFile = open(IIC_DEVICE_NAME, O_RDWR | O_SYNC)) == -1)
@@ -77,7 +78,7 @@ int Xg1300lGyro::readSensors()
 	//Get angle from XGL gyro
 	static float s_last_angle = 0;
 	short new_angle = pIic->Raw[mGyroPort][pIic->Actual[mGyroPort]][0]*256 + pIic->Raw[mGyroPort][pIic->Actual[mGyroPort]][1];
-	mRotation = - (new_angle - s_last_angle)/100.0; //XGL angle must be inverted
+	mRotation = mRateSign * (new_angle - s_last_angle)/100.0; //XGL angle must be inverted
 	mRotation = math_functions::deg2rad(mRotation);
 	mRotation = math_functions::unwrap(mRotation);
 	s_last_angle = new_angle;

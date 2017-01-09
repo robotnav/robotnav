@@ -2,7 +2,7 @@
  * Robot Navigation Program
  * www.robotnav.com
  *
- * (C) Copyright 2013 - 2014 Lauro Ojeda
+ * (C) Copyright 2013 - 2016 Lauro Ojeda
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +29,9 @@
 #include "MathFunctions.h"
 
 using namespace std;
+const float MARKER_SPEED_P_CONTROL = 0.2;
 
-Ev3::Ev3(float period, float track, float encoderScaleFactor, char *pMotorInfo, char *sensorInfo) : Robot(period, track, encoderScaleFactor)
+Ev3::Ev3(float period, float track, float encoderScaleFactor, char *pMotorInfo) : Robot(period, track, encoderScaleFactor)
 {
 	//This type of robot does not use any sensor, besides encoders, which are defined by the motor information
 	//The motor port is the one shown in the Ev3 label
@@ -38,7 +39,7 @@ Ev3::Ev3(float period, float track, float encoderScaleFactor, char *pMotorInfo, 
 	mRightEncoderPort = 	pMotorInfo[RIGHT] - MOTOR_PORT_OFFSET;
 	mLeftMotorPort = pow(2, mLeftEncoderPort);
 	mRightMotorPort = pow(2, mRightEncoderPort);
-
+		
 	//Open the device file asscoiated to the motor controlers
 	if((mMotorDevFile = open(PWM_DEVICE_NAME, O_WRONLY)) == -1)
 	{
@@ -64,13 +65,13 @@ Ev3::Ev3(float period, float track, float encoderScaleFactor, char *pMotorInfo, 
 	// All motor operations use the first command byte to indicate the type of operation
 	// and the second one to indicate the motor(s) port(s)
 	motor_command[0] = opOUTPUT_SPEED;
-	motor_command[1] = mLeftMotorPort | mRightMotorPort; 
+	motor_command[1] = mLeftMotorPort | mRightMotorPort;
 	motor_command[2] = 0;
 	write(mMotorDevFile,motor_command, 3);
 	// Start the motor
 	motor_command[0] = opOUTPUT_START;
 	write(mMotorDevFile, motor_command, 2);
-	
+
 	//Read sensors a first time in order to initialize some of the states
 	strcpy(mName,"EV3");
 	readSensors();
@@ -84,6 +85,25 @@ Ev3::~Ev3()
 	close(mEncoderDevFile);
 	close(mMotorDevFile);
 	cout << "Ev3 Robot closed!\n";
+}
+
+void Ev3::setExtraMotor(char motorInfo)
+{
+	mMarkerEncoderPort = 	motorInfo - MOTOR_PORT_OFFSET;
+	mMarkerMotorPort = pow(2, mMarkerEncoderPort);
+	char motor_command[3];
+	// All motor operations use the first command byte to indicate the type of operation
+	// and the second one to indicate the motor(s) port(s)
+	motor_command[0] = opOUTPUT_SPEED;
+	motor_command[1] = mMarkerMotorPort;
+	motor_command[2] = 0;
+	write(mMotorDevFile,motor_command, 3);
+	// Start the motor
+	motor_command[0] = opOUTPUT_START;
+	write(mMotorDevFile, motor_command, 2);
+	
+	//Determine marker original angle
+	mOrigMarker = pMotorData[mMarkerEncoderPort].TachoSensor;
 }
 
 int Ev3::readSensors()
@@ -143,5 +163,22 @@ void Ev3::setActuators(float speed, float rate)
 	//Send motor commans
 	setActuators(counts_sec);
 	cout << "EV3 SPEED RATE: " << speed << " " << math_functions::rad2deg(rate) << endl;
+}
+
+void Ev3::setMarker(int markerTarget)
+{
+	//Implements a simple P-Control for the extra motor
+	char motor_command[3];
+	int speed;
+
+	mCountMarker = pMotorData[mMarkerEncoderPort].TachoSensor;
+	speed = (mOrigMarker - mCountMarker + markerTarget) * MARKER_SPEED_P_CONTROL;
+	speed = (speed>100) ? 100 :((speed<-100) ? -100 : speed);
+	//Marker motor command
+	motor_command[0] = opOUTPUT_SPEED;
+	motor_command[1] = mMarkerMotorPort; 
+	motor_command[2] = speed;
+	write(mMotorDevFile,motor_command,3);
+	cout << "MARKER CMD: " << markerTarget << " " << mCountMarker << " " << mOrigMarker << " " << speed << endl;
 }
 

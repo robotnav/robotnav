@@ -2,7 +2,7 @@
  * Robot Navigation
  * www.robotnav.com
  *
- * (C) Copyright 2010 - 2014 Lauro Ojeda
+ * (C) Copyright 2013 - 2016 Lauro Ojeda
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,8 @@ const char RIGHT_MOTOR_PORT = 'A';
 char MOTOR_PORTS[] = {LEFT_MOTOR_PORT, RIGHT_MOTOR_PORT};
 
 //Sensor ports, as shown in EV3 brick labels
-const char GYRO_PORT = 1;
+const char XG1300L_GYRO_PORT = 1;
+const char LEGO_GYRO_PORT = 4;
 const char IR_PORT = 4;
 
 //Platform measurements
@@ -50,13 +51,35 @@ const float INC_SPEED_MM_SECOND = 10.0; //[mm/sec]
 const float INC_RATE_RAD_SECOND = math_functions::deg2rad(10.0); //[rad/sec]
 const float PERIOD = 0.1; //[sec]
 
+// Position estimation mode
+#define XG1300L_GYRO
+// User input mode
+#define INPUT_KEYBOARD
+
 int main()
 {
-	//Only one robot can be created at the time
-	Ev3 robot(PERIOD, TRACK, ENCODER_SCALE_FACTOR, (char *)MOTOR_PORTS); //Odometry only
-	//Xg1300lGyro robot(PERIOD, TRACK, ENCODER_SCALE_FACTOR, (char *)MOTOR_PORTS, (char *)&GYRO_PORT); //Gyro Enhanced
-	Odometry odometry(&robot); 
+#if defined INPUT_KEYBOARD
 	Keyboard user_input;
+#elif defined INPUT_IR
+	IrRemote user_input(IR_PORT)
+#elif defined INPUT_BUTTONS
+	Buttons user_input;
+#else
+	#error
+#endif
+
+	//Only one robot can be created at the time
+#if defined NO_GYRO
+	Ev3 robot(PERIOD, TRACK, ENCODER_SCALE_FACTOR, (char *)MOTOR_PORTS); //Odometry only
+#elif defined LEGO_GYRO
+	LegoGyro robot(PERIOD, TRACK, ENCODER_SCALE_FACTOR, (char *)MOTOR_PORTS, (char *)&LEGO_GYRO_PORT); //LEGO Gyro Enhanced
+#elif defined XG1300L_GYRO
+	Xg1300lGyro robot(PERIOD, TRACK, ENCODER_SCALE_FACTOR, (char *)MOTOR_PORTS, (char *)&XG1300L_GYRO_PORT); //Microinfinity Gyro Enhanced
+#else
+	#error
+#endif
+
+	Odometry odometry(&robot); 
 	Control control(&odometry);
 	
 	//Create and initialize speed variables

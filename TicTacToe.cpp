@@ -58,8 +58,8 @@ TicTacToe::TicTacToe(Odometry * pPos): Control(pPos)
 	mBrush = MAX_BRUSH_DEPTH;
 	for(int i = 0; i < CELLS; i++)
 		mCellStatus[i] = NO_MOVE;
-	mRobotMove = rand() % 9;
-	//mRobotMove = 1;
+	//mRobotMove = rand() % 9;
+	mRobotMove = 4;
 	mCellStatus[mRobotMove] = ROBOT_WINS;
 	printStatus();
 }
@@ -114,7 +114,7 @@ bool TicTacToe::drawCircle()
 			break;
 		case CIRCLING_STS:
 			mBrush = 0; // Draw only during circling
-			if(s_count_ellapsed > 200)
+			if(s_count_ellapsed > 270)
 			{
 				s_count_ellapsed = 0;
 				s_circle_status = TURNING_STS;
@@ -123,7 +123,7 @@ bool TicTacToe::drawCircle()
 				return true;
 			}
 			mSpeed = 20.0;
-			mRate = 1.2;
+			mRate = 0.9;
 			s_count_ellapsed ++;
 			break;
 	}
